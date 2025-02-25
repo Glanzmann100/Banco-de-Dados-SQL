@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, Column, String, Integer, Boolean, ForeignKey
-from sqlalchemy.orm import sessionmaker, declarative_base, relationship
+from sqlalchemy.orm import sessionmaker, declarative_base
 
+# Configuração do banco de dados
 db = create_engine("sqlite:///meubanco.db")
 Session = sessionmaker(bind=db)
 session = Session()
@@ -22,6 +23,9 @@ class Usuario(Base):
         self.senha = senha
         self.ativo = ativo  
 
+    def __repr__(self):
+        return f"<Usuario(id={self.id}, nome='{self.nome}', email='{self.email}', ativo={self.ativo})>"
+
 class Livro(Base):
     __tablename__ = "livros"
     id = Column("id", Integer, primary_key=True, autoincrement=True) 
@@ -34,30 +38,8 @@ class Livro(Base):
         self.paginas = paginas
         self.dono = dono
 
+    def __repr__(self):
+        return f"<Livro(id={self.id}, titulo='{self.titulo}', paginas='{self.paginas}', dono={self.dono})>"
+
+# Criação das tabelas no banco de dados
 Base.metadata.create_all(bind=db)
-
-# CRUD
-
-# Create
-usuario_matheus = Usuario(nome="Matheus", email="schmitzmatheus321@gmail.com", senha="123123")
-session.add(usuario_matheus)
-session.commit()
-
-usuario_anderson = Usuario(nome="Anderson", email="andin@gmail.com", senha="123123")
-session.add(usuario_anderson)
-session.commit()
-
-# Read
-usuario_matheus = session.query(Usuario).filter_by(email="schmitzmatheus321@gmail.com").first()
-print(usuario_matheus)
-usuario_anderson = session.query(Usuario).filter_by(email="andin@gmail.com").first()
-print(usuario_anderson)
-
-# Create Livros
-livro = Livro(titulo="Senhor dos Anéis: O Retorno do Rei", paginas="608", dono=usuario_matheus.id)
-session.add(livro)
-session.commit()
-
-livro2 = Livro(titulo="Harry Potter e a Pedra Filosofal", paginas="208", dono=usuario_anderson.id)
-session.add(livro2)
-session.commit()
